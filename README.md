@@ -26,6 +26,7 @@
 <ul>
   <li>Build functions to analyze user's requests via conversation with heybot</li>
   <li>Connect heybot to BambooHR</li>
+  <li>Send request to BambooHR API and get answer for heybot</li>
 </ul>
 
 <h1>Acknowledgement</h1>
