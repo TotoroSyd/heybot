@@ -3,5 +3,5 @@
 # Command line to install all dependecies: pip3 install -r requirement.txt
 # You can install individually each dependency using 'pip install <dependency>'
 Flask>=1.1.2
-slackclient>=2.9.0
+slackclient>=2.8.0
 slackeventapi>=2.2.1
