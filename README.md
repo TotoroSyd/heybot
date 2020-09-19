@@ -7,8 +7,6 @@
   <li>Registering Time Off and update status of your request (Approved/ Not approved)</li>
 </ul>
 
-<h2>Table of contents</h2>
-
 <h1>Built with</h1>
 <ul>
   <li><a href="https://flask.palletsprojects.com/en/1.1.x/installation/#python-version">Flask</a></li>
