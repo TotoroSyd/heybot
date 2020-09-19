@@ -13,7 +13,7 @@
   <li><a href="https://ngrok.com//">ngrok</a></li>
   <li><a href="https://api.slack.com/">Slack API</a></li>
   <li><a href="https://documentation.bamboohr.com/docs">BambooHR API</a></li>
-  <li><a href="https://pip.pypa.io/en/stable/installing/">pip</a> - if you use < Python 2</li>
+  <li><a href="https://pip.pypa.io/en/stable/installing/">pip</a> - manually install if you use < Python 2. Otherwise, pip is already installed</li>
 </ul>
 
 <h1>Feedback and Support</h1>
