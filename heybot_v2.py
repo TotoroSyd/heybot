@@ -36,9 +36,6 @@ slack_web_client = slack.WebClient(
 
 # Get employee directory
 bamboohr = Bamboohr()
-employee_directory = bamboohr.get_employee_directory()
-fields = employee_directory['fields']  # list of dicts
-employees = employee_directory['employees']  # list of dicts
 
 # Call class Message
 msg = Message()
