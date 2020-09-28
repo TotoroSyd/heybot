@@ -14,7 +14,7 @@ class Message:
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "Hello! <@%s> :tada:. How can I help you." % user
+                    "text": f"Hello! <@{user}> :tada:. How can I help you."
                 }
             },
             {
@@ -40,7 +40,7 @@ class Message:
                             },
                             "value": "Request time off",
                             "action_id": "time_off_request"
-                    },
+                        },
                     {
                             "type": "button",
                             "text": {
@@ -50,13 +50,13 @@ class Message:
                             },
                             "value": "Get time off policy",
                             "action_id": "time_off_policy"
-                    }
+                        }
                 ]
             }
         ])
 
     def confuse(self, user):
-        return "Hello <@%s>! Sorry, I'm having trouble understanding you right now." % user
+        return f"Hello <@{user}>! Sorry, I'm having trouble understanding you right now."
 
    # build view payload
     def get_employee_id_modal(self, channel_id, action_id):
@@ -120,8 +120,7 @@ class Message:
             end = report[time_off_type]["end"]
             usedYearToDate = report[time_off_type]["usedYearToDate"]
             # build individual block for each time off type
-            answer = "*%s*: \n• Balance: %s \n• Used To Date: %s \n" % (
-                time_off_type, balance, usedYearToDate)
+            answer = f"*{time_off_type}*: \n• Balance: {balance} \n• Used To Date: {usedYearToDate} \n"
             # concatinate each individual block together
             text_assembly += answer
         # attach text_assembly to the official message block that will be used by chat_postMessage in heybot_v[#].py
@@ -130,7 +129,7 @@ class Message:
                 "type": "header",
                         "text": {
                             "type": "plain_text",
-                            "text": "Your anticipated time off balance on %s is here! :ghost:" % (end),
+                            "text": f"Your anticipated time off balance on {end} is here! :ghost:",
                             "emoji": True
                         }
             },
@@ -156,8 +155,7 @@ class Message:
             policy_id = report[policy]["id"]
             effectiveDate = report[policy]["effectiveDate"]
             # build individual block for each policy
-            answer = "*%s*: \n• Policy ID: %s \n• EffectiveDate: %s \n" % (
-                policy, policy_id, effectiveDate)
+            answer = f"*{policy}*: \n• Policy ID: {policy_id} \n• EffectiveDate: {effectiveDate} \n"
             # concatinate each individual block together
             text_assembly += answer
         # attach text_assembly to the official message block that will be used by chat_postMessage in heybot_v[#].py
