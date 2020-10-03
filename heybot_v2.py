@@ -1,8 +1,24 @@
-# This is the Hello Galaxy Version
+# This is Hello Galaxy version of heybot
 
-# export secret tokens as environment variables.
-# In terminal export SLACK_BOT_TOKEN='your bot user access token here' or SLACK_BOT_TOKEN="" python myapp.py
+# Before running Flask app and Server:
+# A. turn on Python virtual environment: source path/to/env../activate
+# source /Users/phoebengg/Documents/Web_Dev_Generation/heybot/heybot/env/bin/activate
 
+# B. export these environment variables in the terminal
+# 1. export SLACK_BOT_TOKEN='your bot user access token here'
+# 2. export SLACK_SIGNING_SECRET='your bot secret token here'
+# 3. export AUTHORIZATION_TOKEN='your token to access BambooHR here"
+# 4. export COMPANY_DOMAIN='your company domain you used to open BambooHR account'
+
+# After exporting variables:
+# C. export FLASK_APP before "flask run"
+# export FLASK_APP=<file_name>.py
+
+# D. turn on server with ngrok
+# /Users/phoebengg/Downloads/Application/ngrok http 5000
+# port number '5000' got after running 'flask run'
+
+# Code starts from here
 # import dependencies to obtain the environment variable values
 from flask import Flask, request, jsonify
 # from urllib.parse import parse_qs

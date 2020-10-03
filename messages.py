@@ -12,6 +12,7 @@ class Message:
         return ([
             {
                 "type": "section",
+                "block_id": "say_hello_msg",
                 "text": {
                     "type": "mrkdwn",
                     "text": f"Hello! <@{user}> :tada:. How can I help you."
@@ -19,7 +20,7 @@ class Message:
             },
             {
                 "type": "actions",
-                "block_id": "request_timeoff",
+                "block_id": "timeoff_action_buttons",
                 "elements": [
                         {
                             "type": "button",
@@ -58,7 +59,7 @@ class Message:
     def confuse(self, user):
         return f"Hello <@{user}>! Sorry, I'm having trouble understanding you right now."
 
-   # build view payload
+    # build view payload
     def get_employee_id_modal(self, channel_id, action_id):
         private_metadata = {
             "channel_id": channel_id,

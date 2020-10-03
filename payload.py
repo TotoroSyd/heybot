@@ -36,7 +36,7 @@
         "blocks": [
             {
                 "type": "section",
-                "block_id": "XTkTR",
+                "block_id": "say_hello_msg",
                 "text": {
                     "type": "mrkdwn",
                     "text": "Hello! <@U01AZ88AQQ4> :tada:. How can I help you.",
@@ -85,7 +85,7 @@
     ]
 }
 
-# payload from modal submission (used views.open method).
+# payload from employee_id_modal submission (used views.open method).
 {
     "type": "view_submission",
     "team": {"id": "T01B5M3VC1X", "domain": "heybot-workspace"},
