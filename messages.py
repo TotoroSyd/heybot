@@ -108,6 +108,186 @@ class Message:
         }
         )
 
+    # build view payload
+    def get_inputs_request(self, channel_id, action_id):
+        private_metadata = {
+            "channel_id": channel_id,
+            "action_id": action_id
+        }
+        # jsonify a dict into a string (required type for private_metadata)
+        json_private_metadata = json.dumps(private_metadata)
+        return (
+            {
+                "type": "modal",
+                "private_metadata": json_private_metadata,
+                "callback_id": "inputs_request_timeoff_modal",
+                "title": {
+                    "type": "plain_text",
+                    "text": "Time Off Request"
+                },
+                "submit": {
+                    "type": "plain_text",
+                    "text": "Submit"
+                },
+                "blocks": [
+                    {
+                        "type": "input",
+                        "block_id": "inputs_request_timeoff_input",
+                        "element": {
+                            "type": "plain_text_input",
+                            "action_id": "employee_id_value",
+                            "placeholder": {
+                                    "type": "plain_text",
+                                    "text": "Please provide your employee ID"
+                            }
+                        },
+                        "label": {
+                            "type": "plain_text",
+                            "text": "Employee ID"
+                        }
+                    },
+                    {
+                        "type": "input",
+                        "block_id": "time_off_type",
+                        "element": {
+                            "type": "static_select",
+                            "action_id": "time_off_type_value",
+                            "placeholder": {
+                                "type": "plain_text",
+                                "text": "Time off Type",
+                                "emoji": True
+                            },
+                            "options": [
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "Bereauvement",
+                                        "emoji": True
+                                    },
+                                    "value": "77"
+                                },
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "Vacation",
+                                        "emoji": True
+                                    },
+                                    "value": "78"
+                                },
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "Sick",
+                                        "emoji": True
+                                    },
+                                    "value": "79"
+                                },
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "FMLA",
+                                        "emoji": True
+                                    },
+                                    "value": "80"
+                                },
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "Comp/In Lieu Time",
+                                        "emoji": True
+                                    },
+                                    "value": "81"
+                                },
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "COVID-19 Related Absence",
+                                        "emoji": True
+                                    },
+                                    "value": "82"
+                                }
+                            ]
+                        },
+                        "label": {
+                            "type": "plain_text",
+                            "text": "Time Off Type",
+                            "emoji": True
+                        }
+                    },
+                    {
+                        "type": "input",
+                        "block_id": "start_date",
+                        "element": {
+                            "type": "datepicker",
+                            "action_id": "start_date_value",
+                            "initial_date": "2020-01-01",
+                                "placeholder": {
+                                    "type": "plain_text",
+                                    "text": "Start Date",
+                                    "emoji": True
+                                }
+                        },
+                        "label": {
+                            "type": "plain_text",
+                            "text": "Start Date",
+                            "emoji": True
+                        }
+                    },
+                    {
+                        "type": "input",
+                        "block_id": "end_date",
+                        "element": {
+                            "type": "datepicker",
+                            "action_id": "end_date_value",
+                            "initial_date": "2020-01-01",
+                                "placeholder": {
+                                    "type": "plain_text",
+                                    "text": "End Date",
+                                    "emoji": True
+                                }
+                        },
+                        "label": {
+                            "type": "plain_text",
+                            "text": "End Date",
+                            "emoji": True
+                        }
+                    },
+                    {
+                        "type": "input",
+                        "block_id": "amount_in_days",
+                        "element": {
+                            "type": "plain_text_input",
+                            "action_id": "amount_in_days_value",
+                            "placeholder": {
+                                "type": "plain_text",
+                                "text": "0.5, 1, ... , 3.5, 5"
+                            }
+                        },
+                        "label": {
+                            "type": "plain_text",
+                            "text": "Amount in Days",
+                            "emoji": True
+                        }
+                    },
+                    {
+                        "type": "input",
+                        "block_id": "note",
+                        "element": {
+                            "type": "plain_text_input",
+                            "action_id": "note_value",
+                            "multiline": True
+                        },
+                        "label": {
+                            "type": "plain_text",
+                            "text": "Note",
+                            "emoji": True
+                        }
+                    }
+                ]
+
+            }
+        )
+
     def answer_time_off_balance(self, report):
         report = report
         # get all keys aka time off types from report

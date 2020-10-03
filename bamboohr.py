@@ -11,6 +11,11 @@ class Bamboohr:
     def __init__(self):
         self.companyDomain = os.environ['COMPANY_DOMAIN']
         self.AUTHORIZATION_TOKEN = os.environ['AUTHORIZATION_TOKEN']
+        self.status = {
+            'approve': 'approved',
+            'decline': 'declined',
+            'request': 'requested'
+        }
 
     def get_employee_directory(self):
         url = f"https://api.bamboohr.com/api/gateway.php/{self.companyDomain}/v1/employees/directory"
@@ -153,13 +158,20 @@ class Bamboohr:
 
     # Request time off
 
-    def time_off_request(self, employee_id):
+    def time_off_request(self, employee_id, start_date, end_date, amount, timeOffTypeId):
         url = f"https://api.bamboohr.com/api/gateway.php/{self.companyDomain}/v1/employees/{employee_id}/time_off/request"
         headers = {
             "content-type": "application/json",
             "authorization": f"Basic {self.AUTHORIZATION_TOKEN}"
         }
-        response = requests.request("PUT", url, headers=headers)
+        payload = {
+            "status": f'{self.status["request"]}',
+            "start": f'{start_date}',
+            "end": f'{end_date}',
+            "timeOffTypeId": f'{timeOffTypeId}',
+            "amount": f'{amount}'
+        }
+        response = requests.request("PUT", url, josn=payload, headers=headers)
         print(response.text)
 
 
