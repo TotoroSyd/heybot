@@ -4,6 +4,9 @@
 import requests
 import json
 import os
+import datetime
+import calendar
+import urllib
 from flask import Flask, request, jsonify
 
 
@@ -142,37 +145,78 @@ class Bamboohr:
                     # 'BambooHR Manual Policy': {'id': '..', 'effectiveDate': '..'}
                     sub_answer[el] = response_todict[key][el]
             # add sub_answer Dict to answer Dict
-            # {'BambooHR Manual Policy': {'id': '..', 'effectiveDate': '..'}, 'Vacation Full-Time': {'id': '..', 'effectiveDate': '..'}, ...}
+            # {'BambooHR Manual Policy': {'id': '..', 'effectiveDate': '..'}, ...}
             answer[key] = sub_answer
 
         if response.status_code == 200:
             # print(answer)
             # answer sample
-            # {'BambooHR Manual Policy': {'id': '81', 'effectiveDate': None},
-            # 'BambooHR Unlimited Policy': {'id': '81', 'effectiveDate': None},
-            # 'Sick Full-Time': {'id': '81', 'effectiveDate': None},
-            # 'Vacation Full-Time': {'id': '81', 'effectiveDate': None}}
+            # {'BambooHR Manual Policy': {'id': '81', 'effectiveDate': None},.....}
             return answer
         else:
             return {}
 
     # Request time off
 
-    def time_off_request(self, employee_id, start_date, end_date, amount, timeOffTypeId):
+    def time_off_request(self, employee_id, start_date, end_date, amount, timeOffTypeId, note):
         url = f"https://api.bamboohr.com/api/gateway.php/{self.companyDomain}/v1/employees/{employee_id}/time_off/request"
         headers = {
             "content-type": "application/json",
             "authorization": f"Basic {self.AUTHORIZATION_TOKEN}"
         }
         payload = {
+            "notes": [
+                {
+                    "from": "employee",
+                    "note": f"{note}"
+                }
+            ],
             "status": f'{self.status["request"]}',
             "start": f'{start_date}',
             "end": f'{end_date}',
             "timeOffTypeId": f'{timeOffTypeId}',
             "amount": f'{amount}'
         }
-        response = requests.request("PUT", url, josn=payload, headers=headers)
-        print(response.text)
+        response = requests.request("PUT", url, json=payload, headers=headers)
+        # print(response.status_code)
+        if response.status_code == 201:
+            return 'requested'
+
+    def get_request_id(self, employee_id):
+        start = datetime.date.today()
+        end = self.get_month_day_range(start)
+        url = f"https://api.bamboohr.com/api/gateway.php/{self.companyDomain}/v1/time_off/requests/"
+
+        querystring = {"employeeId": f"{employee_id}", "start": f"{start}",
+                       "end": f"{end}", "status": "requested"}
+        headers = {
+            "accept": "application/json",
+            "authorization": f"Basic {self.AUTHORIZATION_TOKEN}"
+        }
+        response = requests.request(
+            "GET", url, headers=headers, params=querystring)
+        check = json.loads(response.text)
+        print(check[-1])
+        print(type(check))
+
+    # https://gist.github.com/waynemoore/1109153
+    def get_month_day_range(self, date):
+        # For a date 'date' returns the start and end date for the month of 'date'.
+
+        # Month with 31 days:
+        # >>> date = datetime.date(2011, 7, 27)
+        # >>> get_month_day_range(date)
+        # (datetime.date(2011, 7, 1), datetime.date(2011, 7, 31))
+
+        # Month with 28 days:
+        # >>> date = datetime.date(2011, 2, 15)
+        # >>> get_month_day_range(date)
+        # (datetime.date(2011, 2, 1), datetime.date(2011, 2, 28))
+
+        # first_day = date.replace(day=1)
+        last_day = date.replace(
+            day=calendar.monthrange(date.year, date.month)[1])
+        return last_day
 
 
 # Instantiate class Bamboohr
@@ -181,5 +225,8 @@ bamboohr = Bamboohr()
 if __name__ == "__main__":
     # bamboohr.get_employee_directory()
     # bamboohr.get_employee()
-    bamboohr.time_off_balance(108)
+    # bamboohr.time_off_balance(108)
     # bamboohr.time_off_policy()
+    # bamboohr.time_off_request(108, '2020-10-10', '2020-10-12', 3, 78, 'hello')
+    bamboohr.get_request_id(108)
+    # bamboohr.get_month_day_range(datetime.date.today())
