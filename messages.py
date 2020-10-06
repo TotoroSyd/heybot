@@ -41,7 +41,7 @@ class Message:
                             },
                             "value": "Request time off",
                             "action_id": "time_off_request"
-                        },
+                            },
                     {
                             "type": "button",
                             "text": {
@@ -51,7 +51,7 @@ class Message:
                             },
                             "value": "Get time off policy",
                             "action_id": "time_off_policy"
-                        }
+                            }
                 ]
             }
         ])
@@ -358,4 +358,24 @@ class Message:
             }
         ]
 
+        return (block_message)
+
+    def answer_time_off_request(self, receipt):
+        block_message = [
+            {
+                "type": "header",
+                "text": {
+                        "type": "plain_text",
+                        "text": "Hey! Here is your time off request receipt",
+                        "emoji": True
+                }
+            },
+            {
+                "type": "section",
+                "text": {
+                        "type": "mrkdwn",
+                        "text": f"* Request ID: {receipt['id']}*\n Type: {receipt['type']}\n Time off: {receipt['amount_in_hours']} hours ({receipt['amount_in_days']} day(s))\n Start: {receipt['start']}\n End: {receipt['end']}"
+                }
+            }
+        ]
         return (block_message)

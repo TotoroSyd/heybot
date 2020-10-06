@@ -120,6 +120,32 @@ class Bamboohr:
     # Request time off
 
     def time_off_request(self, employee_id, start_date, end_date, amount, timeOffTypeId, note):
+        # convert amount in str to float or int
+        if float(amount):
+            amount = float(amount)
+        else:
+            amount = int(amount)
+        # convert amount in days into hours
+        half_day_to_hours = 4
+        full_day_to_hours = 8
+        amount_in_hours = 0
+        if isinstance(amount, int):
+            amount_in_hours = amount * full_day_to_hours
+        elif isinstance(amount, float):
+            amount_in_hours = (
+                (amount-0.5) * full_day_to_hours) + half_day_to_hours
+        else:
+            print("ERROR: wrong type `amount`")
+        # print("----------")
+        # print("input to make request")
+        # print(employee_id)
+        # print(start_date)
+        # print(end_date)
+        # print(amount)
+        # print(amount_in_hours)
+        # print(timeOffTypeId)
+        # print(note)
+
         url = f"https://api.bamboohr.com/api/gateway.php/{self.companyDomain}/v1/employees/{employee_id}/time_off/request"
         headers = {
             "content-type": "application/json",

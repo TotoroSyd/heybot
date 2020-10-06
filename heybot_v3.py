@@ -157,15 +157,6 @@ def request_handler():
         # Get action id to track button action
         actions = a2["actions"][0]
         action_id = actions["action_id"]
-    elif payload_type == "view_submission":
-        # "private_metadata: {'channel_id': 'D234F5F', 'action_id': 'time_off_balance'}"
-        decode_json_private_data = json.loads(a2["view"]["private_metadata"])
-        # get channel_id
-        channel_id = decode_json_private_data["channel_id"]
-        # Get action id to track button action
-        action_id = decode_json_private_data["action_id"]
-
-    if payload_type == "block_actions":
         if action_id in ("time_off_balance", "time_off_policy"):
             # Prepare
             view = json.dumps(msg.get_employee_id_modal(channel_id, action_id))
@@ -177,16 +168,22 @@ def request_handler():
         # Open a modal when a button is clicked using views.open (https://api.slack.com/block-kit/dialogs-to-modals)
         slack_web_client.views_open(
             view=view, trigger_id=a2["trigger_id"])
-
     elif payload_type == "view_submission":
+        # "private_metadata: {'channel_id': 'D234F5F', 'action_id': 'time_off_balance'}"
+        decode_json_private_data = json.loads(a2["view"]["private_metadata"])
+        # get channel_id
+        channel_id = decode_json_private_data["channel_id"]
+        # Get action id to track button action
+        action_id = decode_json_private_data["action_id"]
         callback_id = a2["view"]["callback_id"]
+
+        report = {}
+        blocks = []
         if callback_id == "employee_id_modal":
             # collect user's input (employee id)
             submission = a2["view"]["state"]["values"]["employee_id_modal_input"]["employee_id_value"]["value"]
             # validate user input
             # Todo
-            report = {}
-            blocks = []
 
             if action_id == "time_off_policy":
                 report = bamboohr.time_off_policy()
@@ -194,44 +191,69 @@ def request_handler():
             elif action_id == "time_off_balance":
                 report = bamboohr.time_off_balance(submission)
                 blocks = msg.answer_time_off_balance(report)
+
             # reply user
             slack_web_client.chat_postMessage(
                 channel=channel_id, blocks=blocks)
+            # close modal view immediately when user clicked Submit
+            # compulsory return an empty HTTP 200 response
+            # --Note: This will close the current view only. To close all view, must return ({"response_action": "clear"})
+            return ({})
 
-        elif callback_id == "inputs_request_timeoff_modal":
-            # employee_id =
-            # start_date =
-            # end_date =
-            # amount =
-            # timeOffTypeId =
+        elif callback_id == "inputs_request_timeoff_modal" and action_id == "time_off_request":
+            timeOffTypeId = a2["view"]["state"]["values"]["time_off_type"]["time_off_type_value"]["selected_option"]["value"]
+            employee_id = a2["view"]["state"]["values"]["inputs_request_timeoff_input"]["employee_id_value"]["value"]
+            start_date = a2["view"]["state"]["values"]["start_date"]["start_date_value"]["selected_date"]
+            end_date = a2["view"]["state"]["values"]["end_date"]["end_date_value"]["selected_date"]
+            amount = a2["view"]["state"]["values"]["amount_in_days"]["amount_in_days_value"]["value"]
+            note = a2["view"]["state"]["values"]["note"]["note_value"]["value"]
 
             # validate user input
             # # Todo
-            # report = {}
-            # blocks = []
-            if action_id == "time_off_request":
-                bamboohr.time_off_request(
-                    employee_id, start_date, end_date, amount, timeOffTypeId)
+            # ------------------
+            t = threading.Thread(target=thread_time_off_request, args=[
+                channel_id, employee_id, start_date, end_date, amount, timeOffTypeId, note])
+            t.start()
+            # # start requesting
+            # response = bamboohr.time_off_request(
+            #     employee_id, start_date, end_date, amount, timeOffTypeId, note)
 
-                slack_web_client.chat_postMessage(
-                    channel=channel_id, text="Service is coming soon")
+            # # collect receipt
+            # if response == 'requested':
+            #     amount_in_days = amount
+            #     receipt = bamboohr.get_request_receipt(
+            #         employee_id, amount_in_days)
 
-        # close modal view immediately when user clicked Submit
-        # compulsory return an empty HTTP 200 response
-        # --Note: This will close the current view only. To close all view, must return ({"response_action": "clear"})
-        return ({})
-    return {"ok": 200}
+            # # prepare receipt block message
+            # blocks = msg.answer_time_off_request(receipt)
 
-    # Get data from payload
-    # # Solution 2
-    # # # request.get_data() doesnt care about the Content-type, returns a bytestring
-    # # # parse_qs() returned a dict from a bytestring. This dict has 1 pair
-    # payload_dict = parse_qs(request.get_data())
-    # payload_dict_value_arr = payload_dict[b'payload']
-    # data = payload_dict_value_arr[0]
-    # datajson = json.loads(data)
-    # channel = datajson["channel"]
-    # print(channel)
+            # # reply user
+            # slack_web_client.chat_postMessage(
+            #     channel=channel_id, blocks=blocks)
+            # ------------
+
+            # close modal view immediately when user clicked Submit
+            # compulsory return an empty HTTP 200 response
+            # --Note: This will close the current view only. To close all view, must return ({"response_action": "clear"})
+            return ({})
+
+    else:
+        print("ERROR: Wrong payload type")
+    return ({"ok": 200})
+
+
+def thread_time_off_request(channel_id, employee_id, start_date, end_date, amount, timeOffTypeId, note):
+    response = response = bamboohr.time_off_request(
+        employee_id, start_date, end_date, amount, timeOffTypeId, note)
+    # collect receipt
+    if response == 'requested':
+        amount_in_days = amount
+        receipt = bamboohr.get_request_receipt(employee_id, amount_in_days)
+    # prepare receipt block message
+    blocks = msg.answer_time_off_request(receipt)
+    # reply user
+    slack_web_client.chat_postMessage(
+        channel=channel_id, blocks=blocks)
 
 
 if __name__ == "__main__":
