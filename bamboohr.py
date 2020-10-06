@@ -192,9 +192,7 @@ class Bamboohr:
             "start": response_text[-1]["start"],
             "end": response_text[-1]["end"]
         }
-        # print("----------")
-        # print('receipt In bamboohr.py')
-        # print(receipt)
+
         return receipt
 
     # https://gist.github.com/waynemoore/1109153
