@@ -195,10 +195,6 @@ def request_handler():
             # reply user
             slack_web_client.chat_postMessage(
                 channel=channel_id, blocks=blocks)
-            # close modal view immediately when user clicked Submit
-            # compulsory return an empty HTTP 200 response
-            # --Note: This will close the current view only. To close all view, must return ({"response_action": "clear"})
-            return ({})
 
         elif callback_id == "inputs_request_timeoff_modal" and action_id == "time_off_request":
             timeOffTypeId = a2["view"]["state"]["values"]["time_off_type"]["time_off_type_value"]["selected_option"]["value"]
@@ -216,28 +212,11 @@ def request_handler():
                 channel_id, employee_id, start_date, end_date, amount, timeOffTypeId, note])
             # run a thread
             t.start()
-            # # start requesting
-            # response = bamboohr.time_off_request(
-            #     employee_id, start_date, end_date, amount, timeOffTypeId, note)
 
-            # # collect receipt
-            # if response == 'requested':
-            #     amount_in_days = amount
-            #     receipt = bamboohr.get_request_receipt(
-            #         employee_id, amount_in_days)
-
-            # # prepare receipt block message
-            # blocks = msg.answer_time_off_request(receipt)
-
-            # # reply user
-            # slack_web_client.chat_postMessage(
-            #     channel=channel_id, blocks=blocks)
-            # ------------
-
-            # close modal view immediately when user clicked Submit
-            # compulsory return an empty HTTP 200 response
-            # --Note: This will close the current view only. To close all view, must return ({"response_action": "clear"})
-            return ({})
+        # close modal view immediately when user clicked Submit
+        # compulsory return an empty HTTP 200 response
+        # --Note: This will close the current view only. To close all view, must return ({"response_action": "clear"})
+        return ({})
 
     else:
         print("ERROR: Wrong payload type")
