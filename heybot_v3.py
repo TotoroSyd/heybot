@@ -211,8 +211,10 @@ def request_handler():
             # validate user input
             # # Todo
             # ------------------
+            # create a Thread object
             t = threading.Thread(target=thread_time_off_request, args=[
                 channel_id, employee_id, start_date, end_date, amount, timeOffTypeId, note])
+            # run a thread
             t.start()
             # # start requesting
             # response = bamboohr.time_off_request(
