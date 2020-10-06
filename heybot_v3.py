@@ -30,6 +30,7 @@ import slack
 from slackeventsapi import SlackEventAdapter
 import json
 import requests
+import threading
 # import re
 # import nltk
 # nltk.download()
@@ -109,7 +110,8 @@ def reply_user(event_data):
             # reply to user
             slack_web_client.chat_postMessage(channel=channel_id, text=text)
 
-    return "", 200
+    return {"ok": 200}
+
 # Error events
 
 
@@ -123,8 +125,19 @@ slack_events_adapter.start(port=5000)
 
 @ app.route('/slack/request_handler', methods=['POST', 'GET'])
 def request_handler():
- # Get data from payload
-    # Solution 1:
+    # print("request_handler called")
+    # Get data from payload
+    # # Solution 2
+    # # # request.get_data() doesnt care about the Content-type, returns a bytestring
+    # # # parse_qs() returned a dict from a bytestring. This dict has 1 pair
+    # payload_dict = parse_qs(request.get_data())
+    # payload_dict_value_arr = payload_dict[b'payload']
+    # data = payload_dict_value_arr[0]
+    # datajson = json.loads(data)
+    # channel = datajson["channel"]
+    # print(channel)
+
+    # Solution 1: step by step
     payload = request.form  # return an ImmutableMultiDict with 1 pair
     a1 = payload['payload']  # get value of key 'payload'
     # Note that if you have single quotes as a part of your keys or values this will fail due to improper character replacement.
