@@ -22,7 +22,6 @@
 # import dependencies to obtain the environment variable values
 from flask import Flask, request, jsonify
 # from urllib.parse import parse_qs
-
 from bamboohr import Bamboohr
 from messages import Message
 import os
@@ -42,7 +41,7 @@ SLACK_SIGNING_SECRET = os.environ['SLACK_SIGNING_SECRET']
 # create the Flask server
 app = Flask(__name__)
 
-# Initialize a Slack Event Adapter for receiving actions via the Events API
+# Initiate a Slack Event Adapter for receiving actions via the Events API
 slack_events_adapter = SlackEventAdapter(
     SLACK_SIGNING_SECRET, '/slack/events', app)
 
@@ -50,17 +49,15 @@ slack_events_adapter = SlackEventAdapter(
 slack_web_client = slack.WebClient(
     token=os.environ['SLACK_BOT_TOKEN'])
 
-
-# Get employee directory
+# Initiate class Message, Bamboohr
+msg = Message()
 bamboohr = Bamboohr()
 
-# Call class Message
-msg = Message()
-
 # Handle requests
+# This route handles Slack event (message, DM open, memberjoin....)
 
 
-@ app.route('/', methods=['POST'])
+@ app.route('/slack/events', methods=['POST'])
 def URL_challenge_reply():
     # print(request.headers)
     # print(request.data)
@@ -69,17 +66,16 @@ def URL_challenge_reply():
     # print(request.endpoint)
     # print(request.method)
     # print(request.remote_addr)
-    # get ready to receive and respond HTTP POST request from Slack to verify bot's endpoint URL
 
+    # get ready to receive and respond HTTP POST request from Slack to verify bot's endpoint URL
     challenge_parse = (json.loads(request.data))['challenge']
-    # print(challenge_parse)
     # respond URL verification from Slack with 'challenge' value
     response = {"challenge": challenge_parse}
     return response, 200
 
 # When a user sends a DM, the event type will be 'message'.
 # Link the message callback to the 'message' event.
-# Choose to use Event API (handled by SlackEventAdapter) instead of RTM API. Working with SlackEventAdapter seems easier :)
+# Choose to use Event API (handled by SlackEventAdapter) instead of RTM API.
 # Because "The RTM API is only recommended if you're behind a firewall and cannot receive incoming web requests from Slack."
 
 
@@ -94,7 +90,8 @@ def reply_user(event_data):
     expected_greetings = ['hello', 'hey', 'heybot',
                           'good day', 'g\'day', 'hi', 'what\'s up', 'morning', 'afternoon', 'good morning', 'good afternoon', 'howdy', 'help']
 
-    # "subtype" in message_text isn't available to filter bot's messages and user's messages
+    # "subtype" in message_text isn't available to filter a bot's messages and a user's messages
+    # Use 'bot_id' in reuqest body instead. Message from user doesnt have 'bot_id'
     if message.get('bot_id') is None:
         # check greeting from user
         if any(greeting in message_text for greeting in expected_greetings):
@@ -105,7 +102,7 @@ def reply_user(event_data):
                 channel=channel_id, blocks=blocks)
 
         else:
-            # text = "Hello <@%s>! Sorry, I'm having trouble understanding you right now." % message['user']
+            # prepare text to reply when bot can't understand message
             text = msg.confuse(message_user)
             # reply to user
             slack_web_client.chat_postMessage(channel=channel_id, text=text)
@@ -121,6 +118,9 @@ def error_handler(err):
 
 
 slack_events_adapter.start(port=5000)
+
+# This route handles any interactions with shortcuts, modals, or interactive components
+# (such as buttons, select menus, and datepickers)
 
 
 @ app.route('/slack/request_handler', methods=['POST', 'GET'])
