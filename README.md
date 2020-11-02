@@ -6,6 +6,8 @@
   <li>Knowing your Time Off (used, unused...)</li>
   <li>Registering Time Off and update status of your request (Approved/ Not approved)</li>
 </ul>
+<h2>Documentation</h2>
+<a href="https://medium.com/@phoebephuongnguyen/how-im-learning-about-apis-by-building-a-slackbot-final-part-befeeab1812d?source=friends_link&sk=a51cc12db7b75cc7a01471657eadfbc3">Medium Post</a>
 
 <h1>Built with</h1>
 <ul>
